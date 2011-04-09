@@ -44,10 +44,6 @@
   [element]
   (parse-qname (.getQName element)))
 
-(defn make-element-qname
-  [{:keys [name prefix]}]
-  (Element. (element-name name prefix)))
-
 (defn assign-namespace
   [^Element element
    namespace-map
@@ -76,7 +72,7 @@
             (doseq [i item]
               (process-child element i))))))))
 
-(defn ^Element make-element
+(defn make-element
   "Create a tigase element"
   ([spec]
      (apply make-element spec))
@@ -148,3 +144,55 @@
                                  "from" from}])]
     (if body (.addChild element body))
     (Packet/packetInstance element from to)))
+
+(defn iq-elements
+  [^Packet packet]
+  (children packet "/iq"))
+
+(defn pubsub-items
+  "Returns a seq of pubsub elements contained in a packet"
+  [^Packet packet]
+  (children packet "/iq/pubsub"))
+
+(defn bare-recipient?
+  [^Packet packet]
+  (if packet
+    (let [recipient-jid (.getStanzaTo packet)]
+     (= recipient-jid (.copyWithoutResource recipient-jid)))))
+
+(defn get-items
+  [^Packet packet]
+  (if-let [node (first (pubsub-items packet))]
+    (children node)))
+
+ (defn pubsub-element?
+  [^Element element]
+  (and element
+       (= (.getName element) "pubsub")))
+
+(defn packet?
+  "Returns if the element is a packet"
+  [^Element element]
+  (instance? Packet element))
+
+(defn set-packet
+  [request body]
+  {:body body
+   :from (:to request)
+   :to (:from request)
+   :id (:id request)
+   :type :set})
+
+(defn result-packet
+  [request body]
+  (merge
+   (if body (make-element body))
+   {:from (:to request)
+    :to (:from request)
+    :id (:id request)
+    :type :result}))
+
+(defn respond-with
+  "given an item element, returns a packet"
+  [request ^Element item]
+  (.okResult (:packet request) item 0))
