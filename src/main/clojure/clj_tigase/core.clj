@@ -186,7 +186,7 @@
 (defn result-packet
   [request body]
   (merge
-   (if body (make-element body))
+   (if body {:body (make-element body)})
    {:from (:to request)
     :to (:from request)
     :id (:id request)
