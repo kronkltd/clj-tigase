@@ -40,7 +40,22 @@
 ;;             response  (make-element element-vec)]
 ;;         (expect (element? response))))))
 
-(describe to-tigase-element)
+;; (describe to-tigase-element
+;;   (testing "a simple element"
+;;     (do-it "should"
+;;       (let [element
+;;             {:tag :query,
+;;              :attrs {:xmlns "http://onesocialweb.org/spec/1.0/vcard4#query"},
+;;              :content nil}]
+;;         (expect (element? (to-tigase-element element))))))
+;;   (testing "a full entry" {:focus true}
+;;     (do-it "should return a tigase element"
+;;       (with-format :atom
+;;         (with-serialization :http
+;;           (let [activity (factory Activity)
+;;                 element (show-section activity)
+;;                 response (to-tigase-element element)]
+;;             (expect (element? response))))))))
 
 (describe children)
 

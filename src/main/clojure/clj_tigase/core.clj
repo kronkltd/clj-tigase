@@ -8,10 +8,10 @@
            tigase.xml.Element
            tigase.xmpp.JID))
 
-(def #^:dynamic *message-router* (ref nil))
+(defonce #^:dynamic *message-router* (ref nil))
 
 (def #^:dynamic *configurator-prop-key* "tigase-configurator")
-(defonce #^:dynamic *default-configurator* "tigase.conf.Configurator")
+(def #^:dynamic *default-configurator* "tigase.conf.Configurator")
 
 (def #^:dynamic *name* "Tigase")
 (def #^:dynamic *server-name* "message-router")
@@ -173,8 +173,9 @@
 
 (defn get-items
   [^Packet packet]
-  (if-let [node (first (pubsub-items packet))]
-    (children node)))
+  (concat
+   (children packet "/iq/pubsub/items")
+   (children packet "/message/event/items")))
 
  (defn pubsub-element?
   [^Element element]
