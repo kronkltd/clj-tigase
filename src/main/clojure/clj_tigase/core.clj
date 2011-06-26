@@ -275,6 +275,8 @@
         (.newInstance (Class/forName config-class-name))]
     (.init config tigase-options)
     (.setName config "basic-conf")
+    (dosync
+     (ref-set *configurator* config))
     config))
 
 (defn start-router!
