@@ -8,13 +8,12 @@
            tigase.xml.Element
            tigase.xmpp.JID))
 
-(defonce #^:dynamic *message-router* (ref nil))
-
-(def #^:dynamic *configurator-prop-key* "tigase-configurator")
-(def #^:dynamic *default-configurator* "tigase.conf.Configurator")
-
-(def #^:dynamic *name* "Tigase")
-(def #^:dynamic *server-name* "message-router")
+(defonce ^:dynamic *message-router* (ref nil))
+(defonce ^:dynamic *configurator* (ref nil))
+(defonce ^:dynamic *configurator-prop-key* "tigase-configurator")
+(defonce ^:dynamic *default-configurator* "tigase.conf.Configurator")
+(defonce ^:dynamic *name* "Tigase")
+(defonce ^:dynamic *server-name* "message-router")
 
 (declare to-tigase-element)
 
