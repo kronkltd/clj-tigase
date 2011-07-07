@@ -4,6 +4,7 @@
            tigase.conf.ConfigurationException
            tigase.conf.ConfiguratorAbstract
            tigase.server.Packet
+           tigase.server.MessageRouter
            tigase.server.XMPPServer
            tigase.xml.Element
            tigase.xmpp.JID))
@@ -39,7 +40,7 @@
          (if (not= k "")
            (list ":" k))))
 
-(defn element-name
+(defn ^String element-name
   [name prefix]
   (str (if (not= prefix "")
          (str prefix ":"))
@@ -49,9 +50,10 @@
   [{:keys [name prefix]}]
   (Element. (element-name name prefix)))
 
+;; FIXME: Abdera element
 (defn get-qname
   "Returns a map representing the QName of the given element"
-  [element]
+  [^Element element]
   (parse-qname (.getQName element)))
 
 (defn assign-namespace
@@ -88,7 +90,7 @@
      (apply make-element spec))
   ([name attrs]
      (make-element name attrs nil))
-  ([name attrs & children]
+  ([^String name attrs & children]
      (let [element (Element. name)]
        (doseq [[attr val] attrs]
          (.addAttribute element attr (str val)))
@@ -96,7 +98,7 @@
          (process-child element child))
        element)))
 
-(defn to-tigase-element
+(defn ^Element to-tigase-element
   "turns a map into a tigase element"
   [{:keys [tag attrs content]}]
   (let [attribute-names (into-array String (map name (keys attrs)))
@@ -133,25 +135,28 @@
 ;;                (abdera-to-tigase-element
 ;;                 child-element bound-namespaces))))
 
+
+;; TODO: This is not strictly a tigase function. Replace with a more
+;; generic version
 (defn add-attributes
   [^Element element abdera-element]
-  (doseq [attribute (.getAttributes abdera-element)]
-    (let [value (.getAttributeValue abdera-element attribute)]
+  (doseq [^QName attribute (.getAttributes abdera-element)]
+    (let [^String value (.getAttributeValue abdera-element attribute)]
       (.addAttribute element (.getLocalPart attribute) value))))
 
 (defn make-packet
-  [{:keys [to from body type id] :as packet-map}]
+  [{:keys [to from ^String body type id] :as packet-map}]
   (let [element-name (condp = type
                          :result "iq"
                          :set "iq"
                          :get "iq"
                          :chat "message"
                          :headline "message")
-        element (make-element
-                 [element-name {"id" id
-                                 "type" (if type (name type) "")
-                                 "to" to
-                                 "from" from}])]
+        ^Element element (make-element
+                          [element-name {"id" id
+                                         "type" (if type (name type) "")
+                                         "to" to
+                                         "from" from}])]
     (if body (.addChild element body))
     (Packet/packetInstance element from to)))
 
@@ -201,7 +206,8 @@
 (defn respond-with
   "given an item element, returns a packet"
   [request ^Element item]
-  (.okResult (:packet request) item 0))
+  (let [^Packet packet (:packet request)]
+    (.okResult packet item 0)))
 
 (defn make-jid
   ([user]
@@ -220,9 +226,9 @@
   (let [type (keyword (str (.getType packet)))
         to (.getStanzaTo packet)
         from (.getStanzaFrom packet)
-                payload  (first (iq-elements packet))
+        ^Element payload  (first (iq-elements packet))
         pubsub? (pubsub-element? payload)
-        child-node (first (children payload))
+        ^Element child-node (first (children payload))
         node (and child-node (node-value child-node))
         name (if pubsub?
                (if child-node (.getName child-node))
@@ -244,15 +250,15 @@
   [^Packet packet]
   (try
     (.initVars packet)
-    (.processPacket @*message-router* packet)
+    (.processPacket ^MessageRouter @*message-router* packet)
     (catch NullPointerException e
       #_(error "Router not started: " e)
       #_(stacktrace/print-stack-trace e)
       packet)))
 
 
-(defn get-router
-  [args config]
+(defn ^MessageRouter get-router
+  [args ^ConfiguratorAbstract config]
   (let [mr-class-name (.getMessageRouterClassName config)]
     (.newInstance (Class/forName mr-class-name))))
 
@@ -263,7 +269,7 @@
 
 (defn process!
   [^Packet packet]
-  (.processPacket *message-router* packet))
+  (.processPacket ^MessageRouter *message-router* packet))
 
 (defn get-config
   [initial-config tigase-options]
