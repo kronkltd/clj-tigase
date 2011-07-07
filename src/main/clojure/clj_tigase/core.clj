@@ -50,12 +50,6 @@
   [{:keys [name prefix]}]
   (Element. (element-name name prefix)))
 
-;; FIXME: Abdera element
-(defn get-qname
-  "Returns a map representing the QName of the given element"
-  [^Element element]
-  (parse-qname (.getQName element)))
-
 (defn assign-namespace
   [^Element element
    namespace-map
@@ -127,22 +121,6 @@
                (map
                 (partial assign-namespace element namespace-map)
                 namespaces))))
-
-;; (defn add-children
-;;   [^Element element abdera-element bound-namespaces]
-;;   (doseq [child-element (.getElements abdera-element)]
-;;     (.addChild element
-;;                (abdera-to-tigase-element
-;;                 child-element bound-namespaces))))
-
-
-;; TODO: This is not strictly a tigase function. Replace with a more
-;; generic version
-(defn add-attributes
-  [^Element element abdera-element]
-  (doseq [^QName attribute (.getAttributes abdera-element)]
-    (let [^String value (.getAttributeValue abdera-element attribute)]
-      (.addAttribute element (.getLocalPart attribute) value))))
 
 (defn make-packet
   [{:keys [to from ^String body type id] :as packet-map}]
