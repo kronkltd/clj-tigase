@@ -1,5 +1,6 @@
 (ns clj-tigase.core
-  (:use [clojure.string :only (trim)])
+  (:use (clj-tigase element packet)
+        [clojure.string :only (trim)])
   (:import javax.xml.namespace.QName
            tigase.conf.ConfigurationException
            tigase.conf.ConfiguratorAbstract
@@ -16,112 +17,6 @@
 (defonce ^:dynamic *name* "Tigase")
 (defonce ^:dynamic *server-name* "message-router")
 
-(declare to-tigase-element)
-
-(defn packet?
-  "Returns if the element is a packet"
-  [element]
-  (instance? Packet element))
-
-(defn element?
-  "Returns if the argument is an element"
-  [arg]
-  (instance? Element arg))
-
-(defn parse-qname
-  [^QName qname]
-  {:name (.getLocalPart qname)
-   :prefix (.getPrefix qname)})
-
-(defn ns-prefix
-  [k]
-  (apply str
-         "xmlns"
-         (if (not= k "")
-           (list ":" k))))
-
-(defn ^String element-name
-  [name prefix]
-  (str (if (not= prefix "")
-         (str prefix ":"))
-       name))
-
-(defn make-element-qname
-  [{:keys [name prefix]}]
-  (Element. (element-name name prefix)))
-
-(defn assign-namespace
-  [^Element element
-   namespace-map
-   [k v]]
-  (if (not= (get namespace-map k) v)
-    (do (.addAttribute
-         element (ns-prefix k) v)
-        [k v])))
-
-(declare make-element)
-
-(defn process-child
-  "adds content of the appropriate type to the element"
-  [^Element element item]
-  #_(println "item: " item)
-  (if (element? item)
-    (.addChild element item)
-    (if (map? item)
-      (.addChild element (to-tigase-element item))
-      (if (vector? item)
-        (if (seq item)
-          (.addChild element (apply make-element item)))
-        (if (string? item)
-          (.setCData element (trim item))
-          (if (coll? item)
-            (doseq [i item]
-              (process-child element i))))))))
-
-(defn make-element
-  "Create a tigase element"
-  ([spec]
-     (apply make-element spec))
-  ([name attrs]
-     (make-element name attrs nil))
-  ([^String name attrs & children]
-     (let [element (Element. name)]
-       (doseq [[attr val] attrs]
-         (.addAttribute element attr (str val)))
-       (doseq [child children]
-         (process-child element child))
-       element)))
-
-(defn ^Element to-tigase-element
-  "turns a map into a tigase element"
-  [{:keys [tag attrs content]}]
-  (let [attribute-names (into-array String (map name (keys attrs)))
-        attribute-values (into-array String (vals attrs))
-        tag-name (name tag)
-        element (Element. tag-name attribute-names attribute-values)]
-    (doseq [item content]
-      (process-child element item))
-    element))
-
-(defn children
-  "returns the child elements of the given element"
-  ([^Element element]
-     (if element
-       (seq (.getChildren element))))
-  ([^Packet packet path]
-     (if packet
-       (seq (.getElemChildren packet path)))))
-
-(defn merge-namespaces
-  [^Element element
-   namespace-map
-   namespaces]
-  (merge namespace-map
-         (into {}
-               (map
-                (partial assign-namespace element namespace-map)
-                namespaces))))
-
 (defn make-packet
   [{:keys [to from ^String body type id] :as packet-map}]
   (let [element-name (condp = type
@@ -137,32 +32,6 @@
                                          "from" from}])]
     (if body (.addChild element body))
     (Packet/packetInstance element from to)))
-
-(defn iq-elements
-  [^Packet packet]
-  (children packet "/iq"))
-
-(defn pubsub-items
-  "Returns a seq of pubsub elements contained in a packet"
-  [^Packet packet]
-  (children packet "/iq/pubsub"))
-
-(defn bare-recipient?
-  [^Packet packet]
-  (if packet
-    (let [recipient-jid (.getStanzaTo packet)]
-     (= recipient-jid (.copyWithoutResource recipient-jid)))))
-
-(defn get-items
-  [^Packet packet]
-  (concat
-   (children packet "/iq/pubsub/items")
-   (children packet "/message/event/items")))
-
- (defn pubsub-element?
-  [^Element element]
-  (and element
-       (= (.getName element) "pubsub")))
 
 (defn set-packet
   [request body]
@@ -188,41 +57,13 @@
     (.okResult packet item 0)))
 
 (defn make-jid
-  ([user]
-     (make-jid (:username user) (:domain user)))
+  "Creates a JID in a variety of ways"
+  ([{:keys [username domain]}]
+     (make-jid username domain))
   ([user domain]
      (make-jid user domain ""))
   ([user domain resource]
      (JID/jidInstance user domain resource)))
-
-(defn node-value
-  [#^Element element]
-  (.getAttribute element "node"))
-
-(defn make-request
-  [^Packet packet]
-  (let [type (keyword (str (.getType packet)))
-        to (.getStanzaTo packet)
-        from (.getStanzaFrom packet)
-        ^Element payload  (first (iq-elements packet))
-        pubsub? (pubsub-element? payload)
-        ^Element child-node (first (children payload))
-        node (and child-node (node-value child-node))
-        name (if pubsub?
-               (if child-node (.getName child-node))
-               (if payload (.getName payload)))]
-    {:to to
-     :from from
-     :pubsub pubsub?
-     :payload payload
-     :id (.getAttribute packet "id")
-     :name name
-     :node node
-     :ns (if payload (.getXMLNS payload))
-     :packet packet
-     :request-method type
-     :method type
-     :items (get-items packet)}))
 
 (defn deliver-packet!
   [^Packet packet]
@@ -233,7 +74,6 @@
       #_(error "Router not started: " e)
       #_(stacktrace/print-stack-trace e)
       packet)))
-
 
 (defn ^MessageRouter get-router
   [args ^ConfiguratorAbstract config]

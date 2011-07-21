@@ -1,67 +1,7 @@
 (ns clj-tigase.core-test
   (:use clj-tigase.core
         [lazytest.describe :only (describe do-it testing)]
-        [lazytest.expect :only (expect)]
-        )
-  )
-
-(describe packet?)
-
-(describe element?)
-
-(describe parse-qname)
-
-(describe ns-prefix
-  (testing "when the key name is empty"
-    (do-it "should have just the xmlns"
-      (let [k ""
-            response (ns-prefix k)]
-        (expect (= response "xmlns"))))))
-
-
-(describe element-name)
-
-(describe make-element-qname)
-
-(describe get-qname)
-
-(describe assign-namespace)
-
-(describe process-child)
-
-;; (describe make-element
-;;   (testing "with a complex structure"
-;;     (do-it "should return an element"
-;;       (let [element-vec
-;;             ["iq" {"type" "get"}
-;;              ["pubsub" {"xmlns" pubsub-uri}
-;;               ["items" {"node" microblog-uri}
-;;                ["item" {"id" "test-id"}]]]]
-;;             response  (make-element element-vec)]
-;;         (expect (element? response))))))
-
-;; (describe to-tigase-element
-;;   (testing "a simple element"
-;;     (do-it "should"
-;;       (let [element
-;;             {:tag :query,
-;;              :attrs {:xmlns "http://onesocialweb.org/spec/1.0/vcard4#query"},
-;;              :content nil}]
-;;         (expect (element? (to-tigase-element element))))))
-;;   (testing "a full entry" {:focus true}
-;;     (do-it "should return a tigase element"
-;;       (with-format :atom
-;;         (with-serialization :http
-;;           (let [activity (factory Activity)
-;;                 element (show-section activity)
-;;                 response (to-tigase-element element)]
-;;             (expect (element? response))))))))
-
-(describe children)
-
-(describe merge-namespaces)
-
-(describe add-attributes)
+        [lazytest.expect :only (expect)]))
 
 ;; (describe make-packet
 ;;   (do-it "should return a packet"
@@ -74,30 +14,6 @@
 ;;           response (make-packet packet-map)]
 ;;       (expect (packet? response)))))
 
-(describe iq-elements)
-
-;; TODO: make generic
-(describe pubsub-items
-  (do-it "should return a seq of elements"
-    (let [element (make-element
-                   ["pubsub" {}
-                    ["items" {}
-                     ["item" {} "foo"]
-                     ["item" {} "bar"]]])
-          packet (make-packet
-                  {:to (make-jid "foo" "example.com")
-                   :from (make-jid "bar" "example.com")
-                   :type :set
-                   :body element})
-          response (pubsub-items packet)]
-      (expect (every? element? response)))))
-
-(describe bare-recipient?)
-
-(describe get-items)
-
-(describe pubsub-element?)
-
 (describe set-packet)
 
 (describe result-packet)
@@ -107,17 +23,6 @@
 (describe make-jid)
 
 (describe node-value)
-
-(describe make-request
-  (testing "a pubsub publish"
-    (do-it "should return a map"
-      (let [packet (make-packet
-                    {:to (make-jid "foo" "example.com")
-                     :from (make-jid "bar" "example.com")
-                     :type :get})
-            response (make-request packet)]
-        (expect (map? response))))))
-
 
 (describe deliver-packet!)
 
