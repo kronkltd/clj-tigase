@@ -1,15 +1,16 @@
 (ns clj-tigase.packet-test
-  (:use clj-tigase.packet
-        [lazytest.describe :only (describe do-it testing)]
-        [lazytest.expect :only (expect)]))
+  (:use clj-tigase.core
+        clj-tigase.element
+        clj-tigase.packet
+        clojure.test))
 
-(describe packet?)
+(deftest packet?-test)
 
-(describe iq-elements)
+(deftest iq-elements-test)
 
 ;; TODO: make generic
-(describe pubsub-items
-  (do-it "should return a seq of elements"
+(deftest pubsub-items-test
+  (testing "should return a seq of elements"
     (let [element (make-element
                    ["pubsub" {}
                     ["items" {}
@@ -21,20 +22,20 @@
                    :type :set
                    :body element})
           response (pubsub-items packet)]
-      (expect (every? element? response)))))
+      (is (every? element? response)))))
 
-(describe bare-recipient?)
+(deftest bare-recipient?-test)
 
-(describe get-items)
+(deftest get-items-test)
 
-(describe make-request
+(deftest make-request-test
   (testing "a pubsub publish"
-    (do-it "should return a map"
+    (testing "should return a map"
       (let [packet (make-packet
                     {:to (make-jid "foo" "example.com")
                      :from (make-jid "bar" "example.com")
                      :type :get})
             response (make-request packet)]
-        (expect (map? response))))))
+        (is (map? response))))))
 
 

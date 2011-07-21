@@ -1,10 +1,9 @@
 (ns clj-tigase.core-test
   (:use clj-tigase.core
-        [lazytest.describe :only (describe do-it testing)]
-        [lazytest.expect :only (expect)]))
+        clojure.test))
 
-;; (describe make-packet
-;;   (do-it "should return a packet"
+;; (deftest make-packet-test
+;;   (testing "should return a packet"
 ;;     (let [user (model.user/create (factory User))
 ;;           packet-map {:to (make-jid user)
 ;;                       :from (make-jid user)
@@ -12,26 +11,26 @@
 ;;                       :body (make-element
 ;;                              ["pubsub" {}])}
 ;;           response (make-packet packet-map)]
-;;       (expect (packet? response)))))
+;;       (is (packet? response)))))
 
-(describe set-packet)
+(deftest set-packet-test)
 
-(describe result-packet)
+(deftest result-packet-test)
 
-(describe respond-with)
+(deftest respond-with-test)
 
-(describe make-jid)
+(deftest make-jid-test)
 
-(describe node-value)
+(deftest node-value-test)
 
-(describe deliver-packet!)
+(deftest deliver-packet!-test)
 
-(describe get-router)
+(deftest get-router-test)
 
-(describe with-router)
+(deftest with-router-test)
 
-(describe process!)
+(deftest process!-test)
 
-(describe get-config)
+(deftest get-config-test)
 
-(describe start-router!)
+(deftest start-router!-test)

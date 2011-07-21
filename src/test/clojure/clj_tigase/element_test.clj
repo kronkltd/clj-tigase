@@ -1,58 +1,57 @@
 (ns clj-tigase.element-test
   (:use clj-tigase.element
-        [lazytest.describe :only (describe do-it testing)]
-        [lazytest.expect :only (expect)]))
+        clojure.test))
 
-(describe element?)
+(deftest element?-test)
 
-(describe parse-qname)
+(deftest parse-qname-test)
 
-(describe ns-prefix
+(deftest ns-prefix-test
   (testing "when the key name is empty"
-    (do-it "should have just the xmlns"
+    (testing "should have just the xmlns"
       (let [k ""
             response (ns-prefix k)]
-        (expect (= response "xmlns"))))))
+        (is (= response "xmlns"))))))
 
 
-(describe element-name)
+(deftest element-name-test)
 
-(describe make-element-qname)
+(deftest make-element-qname-test)
 
-(describe assign-namespace)
+(deftest assign-namespace-test)
 
-;; (describe to-tigase-element
+;; (deftest to-tigase-element-test
 ;;   (testing "a simple element"
-;;     (do-it "should"
+;;     (testing "should"
 ;;       (let [element
 ;;             {:tag :query,
 ;;              :attrs {:xmlns "http://onesocialweb.org/spec/1.0/vcard4#query"},
 ;;              :content nil}]
-;;         (expect (element? (to-tigase-element element))))))
+;;         (is (element? (to-tigase-element element))))))
 ;;   (testing "a full entry" {:focus true}
-;;     (do-it "should return a tigase element"
+;;     (testing "should return a tigase element"
 ;;       (with-format :atom
 ;;         (with-serialization :http
 ;;           (let [activity (factory Activity)
 ;;                 element (show-section activity)
 ;;                 response (to-tigase-element element)]
-;;             (expect (element? response))))))))
+;;             (is (element? response))))))))
 
-(describe process-child)
+(deftest process-child-test)
 
-;; (describe make-element
+;; (deftest make-element-test
 ;;   (testing "with a complex structure"
-;;     (do-it "should return an element"
+;;     (testing "should return an element"
 ;;       (let [element-vec
 ;;             ["iq" {"type" "get"}
 ;;              ["pubsub" {"xmlns" pubsub-uri}
 ;;               ["items" {"node" microblog-uri}
 ;;                ["item" {"id" "test-id"}]]]]
 ;;             response  (make-element element-vec)]
-;;         (expect (element? response))))))
+;;         (is (element? response))))))
 
-(describe children)
+(deftest children-test)
 
-(describe merge-namespaces)
+(deftest merge-namespaces-test)
 
-(describe pubsub-element?)
+(deftest pubsub-element?-test)
