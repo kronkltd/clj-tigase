@@ -8,6 +8,7 @@
            tigase.server.MessageRouter
            tigase.server.XMPPServer
            tigase.xml.Element
+           tigase.xmpp.BareJID
            tigase.xmpp.JID))
 
 (defonce ^:dynamic *message-router* (ref nil))
@@ -55,6 +56,18 @@
   [request ^Element item]
   (let [^Packet packet (:packet request)]
     (.okResult packet item 0)))
+
+(defn get-id
+  [^JID jid]
+  (.getLocalpart jid))
+
+(defn get-domain
+  [^BareJID user]
+  (.getDomain user))
+
+(defn bare-jid
+  [local domain]
+  (BareJID/bareJIDInstance local domain))
 
 (defn make-jid
   "Creates a JID in a variety of ways"
