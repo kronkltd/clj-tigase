@@ -62,7 +62,7 @@
   (.getLocalpart jid))
 
 (defn get-domain
-  [^BareJID user]
+  [user]
   (.getDomain user))
 
 (defn bare-jid
