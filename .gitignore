@@ -1,1 +1,5 @@
 target
+pom.xml
+lib
+classes
+.lein-failures
