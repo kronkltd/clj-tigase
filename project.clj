@@ -4,7 +4,7 @@
   :repositories {"jiksnu-internal" "http://build.jiksnu.com/repository/internal"
                  "jiksnu-snapshots" "http://build.jiksnu.com/repository/snapshots"
                  "tigase-snapshots" "http://maven.tigase.org/"}
-  :dependencies [[org.clojure/clojure "1.3.0-RC0"]
+  :dependencies [[org.clojure/clojure "1.3.0"]
                  [tigase/tigase-server "5.1.0-SNAPSHOT"]]
   :dev-dependencies [[net.kronkltd/midje "1.3-alpha2-SNAPSHOT"]]
   :exclusions [org.clojure/contrib
