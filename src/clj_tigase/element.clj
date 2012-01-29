@@ -12,6 +12,7 @@
 (defn parse-qname
   [^QName qname]
   {:name (.getLocalPart qname)
+   :namespace (.getNamespaceURI qname)
    :prefix (.getPrefix qname)})
 
 (defn ns-prefix
