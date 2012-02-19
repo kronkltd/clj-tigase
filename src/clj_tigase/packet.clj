@@ -30,6 +30,7 @@
    (children packet "/message/event/items")))
 
 (defn make-request
+  "Create a request map from the packet"
   [^Packet packet]
   (let [type (keyword (str (.getType packet)))
         to (.getStanzaTo packet)

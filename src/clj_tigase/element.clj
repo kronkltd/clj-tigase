@@ -89,10 +89,10 @@
 (defn children
   "returns the child elements of the given element"
   ([^Element element]
-     (if element
+     (when element
        (seq (.getChildren element))))
   ([^Packet packet path]
-     (if packet
+     (when packet
        (seq (.getElemChildren packet path)))))
 
 (defn merge-namespaces
@@ -106,10 +106,14 @@
                 namespaces))))
 
  (defn pubsub-element?
-  [^Element element]
-  (and element
-       (= (.getName element) "pubsub")))
+   "Is this element a pubsub element"
+   [^Element element]
+   ;; TODO: un-needed defensive programing
+   (when element
+    (= (.getName element) "pubsub")))
 
+;; TODO: replace with a more generic attr getter
 (defn node-value
+  "Return value of node element"
   [#^Element element]
   (.getAttribute element "node"))

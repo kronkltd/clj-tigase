@@ -58,14 +58,17 @@
     (.okResult packet item 0)))
 
 (defn get-id
+  "Return the local part of a jid"
   [^JID jid]
   (.getLocalpart jid))
 
 (defn get-domain
+  "Refurn the domain part of a jid"
   [user]
   (.getDomain user))
 
 (defn bare-jid
+  "Create a bare jid instance"
   [local domain]
   (BareJID/bareJIDInstance local domain))
 
@@ -79,6 +82,7 @@
      (JID/jidInstance user domain resource)))
 
 (defn deliver-packet!
+  "Send pacet to the message router to be processed"
   [^Packet packet]
   (try
     (.initVars packet)
@@ -89,11 +93,13 @@
       packet)))
 
 (defn ^MessageRouter get-router
+  "Create a message router from the configuration"
   [args ^ConfiguratorAbstract config]
   (let [mr-class-name (.getMessageRouterClassName config)]
     (.newInstance (Class/forName mr-class-name))))
 
 (defmacro with-router
+  "Execute body with message router bound"
   [router & body]
   `(binding [jiksnu.xmpp.router/*message-router* ~router]
      ~@body))
@@ -103,6 +109,7 @@
   (.processPacket ^MessageRouter *message-router* packet))
 
 (defn get-config
+  "Get configurator from configuration information"
   [initial-config tigase-options]
   (ConfiguratorAbstract/loadLogManagerConfig initial-config)
   (let [config-class-name (System/getProperty
@@ -117,6 +124,7 @@
     config))
 
 (defn start-router!
+  "Start a message router using the configuration information"
   [tigase-options config]
   (dosync
    (ref-set
