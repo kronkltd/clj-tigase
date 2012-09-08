@@ -2,10 +2,6 @@
   (:use clj-tigase.element
         clojure.test))
 
-(deftest element?-test)
-
-(deftest parse-qname-test)
-
 (deftest ns-prefix-test
   (testing "when the key name is empty"
     (testing "should have just the xmlns"
@@ -13,12 +9,6 @@
             response (ns-prefix k)]
         (is (= response "xmlns"))))))
 
-
-(deftest element-name-test)
-
-(deftest make-element-qname-test)
-
-(deftest assign-namespace-test)
 
 ;; (deftest to-tigase-element-test
 ;;   (testing "a simple element"
@@ -37,8 +27,6 @@
 ;;                 response (to-tigase-element element)]
 ;;             (is (element? response))))))))
 
-(deftest process-child-test)
-
 ;; (deftest make-element-test
 ;;   (testing "with a complex structure"
 ;;     (testing "should return an element"
@@ -50,8 +38,3 @@
 ;;             response  (make-element element-vec)]
 ;;         (is (element? response))))))
 
-(deftest children-test)
-
-(deftest merge-namespaces-test)
-
-(deftest pubsub-element?-test)

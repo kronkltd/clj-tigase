@@ -1,6 +1,7 @@
 (ns clj-tigase.core
-  (:use (clj-tigase element packet)
-        [clojure.string :only (trim)])
+   (:use clj-tigase.element
+         clj-tigase.packet
+         [clojure.string :only [trim]])
   (:import javax.xml.namespace.QName
            tigase.conf.ConfigurationException
            tigase.conf.ConfiguratorAbstract
@@ -18,38 +19,35 @@
 (defonce ^:dynamic *name* "Tigase")
 (defonce ^:dynamic *server-name* "message-router")
 
+(def packet-types
+  {:result "iq"
+   :set "iq"
+   :get "iq"
+   :chat "message"
+   :headline "message"})
+
 (defn make-packet
   [{:keys [to from ^String body type id] :as packet-map}]
-  (let [element-name (condp = type
-                         :result "iq"
-                         :set "iq"
-                         :get "iq"
-                         :chat "message"
-                         :headline "message")
+  (let [element-name (get packet-types type "iq")
         ^Element element (make-element
                           [element-name {"id" id
                                          "type" (if type (name type) "")
                                          "to" to
                                          "from" from}])]
-    (if body (.addChild element body))
+    (when body (.addChild element body))
     (Packet/packetInstance element from to)))
 
 (defn set-packet
   [request body]
-  {:body body
-   :from (:to request)
-   :to (:from request)
-   :id (:id request)
-   :type :set})
+  (let [{:keys [to from id]} request]
+    {:body body, :from to, :to from, :id id, :type :set}))
 
 (defn result-packet
   [request body]
-  (merge
-   (if body {:body (make-element body)})
-   {:from (:to request)
-    :to (:from request)
-    :id (:id request)
-    :type :result}))
+  (let [{:keys [to from id]} request]
+    (merge
+     (if body {:body (make-element body)})
+     {:from to :to from :id id :type :result})))
 
 (defn respond-with
   "given an item element, returns a packet"

@@ -4,8 +4,7 @@
   :repositories {"tigase-snapshots" "http://maven.tigase.org/"}
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [tigase/tigase-server "5.1.0-SNAPSHOT"]]
-  :dev-dependencies [[midje "1.3.0"]]
-  :exclusions [org.slf4j/slf4j-log4j12
-               org.slf4j/slf4j-jdk14]
+  :dev-dependencies [[midje "1.4.0"]
+                     [lein-midje "1.0.10"]]
   :warn-on-reflection true
   :jvm-opts ["-server"])

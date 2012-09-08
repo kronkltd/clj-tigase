@@ -1,6 +1,18 @@
 (ns clj-tigase.core-test
-  (:use clj-tigase.core
-        clojure.test))
+  (:use [clj-tigase.core :only [make-packet set-packet]]
+        [midje.sweet :only [contains every-checker fact future-fact =>]])
+  (:import tigase.server.Packet))
+
+(fact "#'make-packet"
+  (let [packet-map {:type :set}]
+    (make-packet packet-map) =>
+    (every-checker
+     (partial instance? Packet))))
+
+(fact "#'set-packet"
+  (let [request {:to .to. :from .from. :id .id.}]
+    (set-packet request .body.) =>
+    (contains {:to .from. :from .to. :id .id. :body .body. :type :set})))
 
 ;; (deftest make-packet-test
 ;;   (testing "should return a packet"
@@ -12,25 +24,3 @@
 ;;                              ["pubsub" {}])}
 ;;           response (make-packet packet-map)]
 ;;       (is (packet? response)))))
-
-(deftest set-packet-test)
-
-(deftest result-packet-test)
-
-(deftest respond-with-test)
-
-(deftest make-jid-test)
-
-(deftest node-value-test)
-
-(deftest deliver-packet!-test)
-
-(deftest get-router-test)
-
-(deftest with-router-test)
-
-(deftest process!-test)
-
-(deftest get-config-test)
-
-(deftest start-router!-test)
