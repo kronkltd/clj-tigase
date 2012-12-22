@@ -7,7 +7,7 @@ from Clojure.
 
 With Leiningen:
 
-    [clj-tigase "0.1.0-SNAPSHOT"]
+    [clj-tigase "0.1.0"]
 
 
 With Maven:
@@ -15,5 +15,5 @@ With Maven:
     <dependency>
       <groupId>clj-tigase</groupId>
       <artifactId>clj-tigase</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>0.1.0</version>
     </dependency>
