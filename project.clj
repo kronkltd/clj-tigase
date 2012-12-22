@@ -6,9 +6,9 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories {"tigase-snapshots" "http://maven.tigase.org/"}
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [tigase/tigase-server "5.1.0-SNAPSHOT"]]
+                 [tigase/tigase-server "5.1.3"]]
   :profiles {:dev
              {:dependencies
-              [[midje "1.5.0-SNAPSHOT"]]}}
-  :plugins [[codox "0.6.1"]
-            [lein-midje "2.0.0-SNAPSHOT"]])
+              [[midje "1.5-alpha3"]]}}
+  :plugins [[codox "0.6.4"]
+            [lein-midje "2.0.3"]])
