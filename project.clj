@@ -1,4 +1,4 @@
-(defproject clj-tigase "0.1.0-SNAPSHOT"
+(defproject clj-tigase "0.1.0"
   :description "Clojure library for working with Tigase XMPP Server"
   :url "http://github.com/duck1123/clj-tigase"
   :min-lein-version "2.0.0"
