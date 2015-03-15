@@ -1,6 +1,6 @@
 (ns clj-tigase.core-test
-  (:use [clj-tigase.core :only [make-packet set-packet]]
-        [midje.sweet :only [contains every-checker fact future-fact =>]])
+  (:require [clj-tigase.core :refer [make-packet set-packet]]
+            [midje.sweet :refer [contains every-checker fact future-fact =>]])
   (:import tigase.server.Packet))
 
 (fact "#'make-packet"

@@ -44,10 +44,10 @@
 (declare make-element)
 (declare to-tigase-element)
 
+;; TODO: smells like a protocol
 (defn process-child
   "adds content of the appropriate type to the element"
   [^Element element item]
-  #_(println "item: " item)
   (if (element? item)
     (.addChild element item)
     (if (map? item)

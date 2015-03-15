@@ -1,8 +1,8 @@
 (ns clj-tigase.packet-test
-  (:use [clj-tigase.core :only [make-jid make-packet]]
-        [clj-tigase.element :only [element? make-element]]
-        [clj-tigase.packet :only [make-request pubsub-items]]
-        [midje.sweet :only [every-checker fact future-fact =>]]))
+  (:require [clj-tigase.core :refer [make-jid make-packet]]
+            [clj-tigase.element :refer [element? make-element]]
+            [clj-tigase.packet :refer [make-request pubsub-items]]
+            [midje.sweet :refer [every-checker fact future-fact =>]]))
 
 ;; TODO: make generic
 (fact "#'pubsub-items"
